@@ -1,6 +1,6 @@
 import pygame
+from constants import * 
 
-RED     = (255, 0, 0)
 
 class Player:
     """ the player """
@@ -21,6 +21,9 @@ class Player:
         self.beamRect =self.beam.get_rect()
         self.beam.fill(RED)
         self.beam.set_alpha(0)
+
+        # define the direction he is facing
+        self.face = UP 
         
 
 
@@ -42,24 +45,14 @@ class Player:
         
         return collision
 
-    def shootLaser(self, screen, clock):
-        """ shoots a laser beam until the end of the screen is reached """
-        self.beamRect.x = self.rect.centerx-3
-        self.beamRect.y = self.rect.top - 24
-        self.beam.set_alpha(255*.8)
-        screen.blit(self.beam, self.beamRect)
-        print "pew"
-        print 'y',  self.beamRect.y
-        print 'top ' , self.beamRect.top
-        
-        while self.beamRect.top > 0:
-            self.beamRect.y -= 20
-            screen.blit(self.beam, self.beamRect)
-            clock.tick(10)
 
 
     def moveLeft(self, amount, collidable):
-        " move left by the given amount, avoiding collisions with the given rects  " 
+        " move left by the given amount, avoiding collisions with the given rects  "
+        # always change the direction he is facing
+        self.face = LEFT
+
+        # move
         if self.rect.left > 0:# and self.rect.collidelist(collidable) == -1:
             self.rect.left -= amount
             if self.rect.collidelist(collidable) >= 0:
@@ -67,6 +60,10 @@ class Player:
         
     def moveRight(self, amount, collidable):
         " move right by the given amount, avoiding collisions with the given rects "
+        # always change the direction he is facing
+        self.face = RIGHT
+
+        # move
         if self.rect.right < self.area.width: #and self.rect.collidelist(collidable) == -1:
             self.rect.left += amount
             if self.rect.collidelist(collidable) >= 0:
@@ -74,6 +71,10 @@ class Player:
 
     def moveUp(self, amount, collidable):
         " move up by the given amount, avoiding collisions with the given rects "
+        # always change the direction he is facing
+        self.face = UP
+
+        # move
         if self.rect.top > 0:# and self.rect.collidelist(collidable) == -1:
             self.rect.top -= amount
             if self.rect.collidelist(collidable) >= 0:
@@ -81,6 +82,10 @@ class Player:
 
     def moveDown(self, amount, collidable ):
         " move down by the given amount, avoiding collisions with the given rects " 
+        # always change the direction he is facing
+        self.face = DOWN
+
+        # move
         if self.rect.bottom < self.area.height:# and self.rect.collidelist(collidable) == -1:
             self.rect.top += amount
             if self.rect.collidelist(collidable) >= 0:

@@ -1,19 +1,10 @@
 # collect the stars
 # get all the red stars
 
-import pygame, sys, random, time, tree, player, infoBox, fairy, laser
+import pygame, sys, random, time, tree, player, infoBox, fairy, laser, boulders
 from pygame.locals import *
+from constants import * 
 
-
-
-# set up the colors
-BLACK   = (0, 0, 0)
-RED     = (255, 0, 0)
-GREEN   = (0, 255, 0)
-BLUE    = (0, 0, 255)
-WHITE   = (255, 255, 255)
-YELLOW	= (255, 255, 0)
-SILVER  = (192, 192, 192)
 
 # set up movement variables
 moveLeft = False
@@ -32,6 +23,8 @@ MOVESPEED = 6
 BEAMSPEED = 3
 beams = [] # the active laser beams 
 
+breakable = []
+breakableRects = []
 
 def getEvents(events):
     "get all user events"
@@ -75,8 +68,8 @@ def getEvents(events):
                         boxOn = True
                 if event.key == ord('i'):
                     boxOn = True
-                if event.key == K_SPACE:
-                    shootBeam = True
+##                if event.key == K_SPACE:
+##                    shootBeam = True
 
             if event.type == KEYUP:
                 if event.key == K_LEFT:
@@ -88,7 +81,7 @@ def getEvents(events):
                 if event.key == K_DOWN:
                     moveDown = False
                 if event.key == K_SPACE:
-                    shootBeam = False
+                    shootBeam = True
         
         # finish the dialogue box sequence before moving on 
         else:
@@ -110,21 +103,23 @@ def getEvents(events):
 
 def addBeam():
     """ adds a laser beam starting from link's current position """
-    global beams
+    global beams, shootBeam
 
     # the beam direction is whatever direction link was facing when this fxn was called
     # if no direction was being faced, then the default direction is top
     
     if moveLeft:
-        direction = "left"
+        direction = LEFT
     elif moveRight:
-        direction = "right"
+        direction = RIGHT
     elif moveDown:
-        direction = "down"
+        direction = DOWN
     else:
-        direction = "up"
+        direction = UP
         
     beams.append(laser.Laser(screen,link.rect.centerx-2 ,link.rect.top+20, direction))
+    shootBeam = False
+    print len(beams) , 'beams'
 
 def moveBeams():
     """ moves all active beams. deletes all inactive ones """
@@ -132,17 +127,38 @@ def moveBeams():
 
     remove = []
     for i, beam in enumerate(beams):
-        beam.moveBeam( MOVESPEED , collidable )
+        beam.moveBeam( MOVESPEED , collidable, breakable )
         if not beam.active:
             remove.append(i)
+            print i 
 
     # remove all inactive beams
     beams = [beam for i, beam in enumerate(beams) if i not in remove]
+
+def updateBreakable():
+    """ removes broken/inactive obects from the breakable list """
+    global breakable, collidable
+    
+    remove = []
+    for i, item in enumerate(breakable):
+        if item.removed:
+            collidable.remove(item)
+            remove.append(i)
+    # remove all broken objects
+    breakable = [item for i, item in enumerate(breakable) if i not in remove]
+            
 
 def drawBeams():
     """ draw all active beams """
     for beam in beams:
         beam.draw(screen)
+
+
+def drawTrees():
+    """ draw all trees """
+    for tree in alltrees:
+        tree.draw(screen)
+
 
 def movelink():
     """ move the link """
@@ -187,6 +203,17 @@ bg = pygame.Rect(0,0, WINDOWWIDTH, WINDOWHEIGHT)
 bgImage = pygame.image.load('tmp-BG.png')
 bgStretchedImage = pygame.transform.scale(bgImage, (WINDOWWIDTH, WINDOWHEIGHT))
 
+# create boulders
+BOULDERWIDTH = 216
+BOULDERHEIGHT = 40
+BOULDERPOSX = WINDOWWIDTH/2 - BOULDERWIDTH/2 +16 # center it
+BOULDERPOSY = WINDOWHEIGHT/2 - BOULDERHEIGHT +16
+
+boulderImages = [pygame.image.load('tmp-boulders-00.png'), pygame.image.load('tmp-boulders-01.png'), pygame.image.load('tmp-boulders-02.png'), pygame.image.load('tmp-boulders-03.png')]
+boulders = boulders.Boulders(boulderImages, BOULDERWIDTH, BOULDERHEIGHT, BOULDERPOSX, BOULDERPOSY)
+collidable.append(boulders.rect)
+breakable.append(boulders)
+
 # Trees 
 TREEWIDTH = 108
 TREEHEIGHT = 108
@@ -223,6 +250,9 @@ collidable.append(t.stump)
 #render.add(t)
 
 #collidable.extend(alltrees)
+
+
+
 
 # create fairy
 FAIRYWIDTH = 36
@@ -273,6 +303,7 @@ while not gameOver:
 
     # animate all beams
     moveBeams()
+    updateBreakable() # update the collidable list 
 
     # animate link 
     movelink()
@@ -280,19 +311,24 @@ while not gameOver:
     # draw the background onto the surface
     screen.blit(bgStretchedImage, bg)
 
+
     # draw  link onto the surface
     screen.blit(linkStretchedImage, link)
-            
+
 
     # draw the trees onto the surface
-    for tree in alltrees:
-        tree.draw(screen)
+    drawTrees()
+
+    # draw the removable objects onto the surface
+    boulders.draw(screen)
+            
 
     # draw the fairy
     missy.draw(screen)
 
     # draw the beams 
     drawBeams()        
+
 
     # draw the info box
     if boxOn:
@@ -311,7 +347,7 @@ while not gameOver:
 
     # draw the window onto the screen
     pygame.display.update()
-    mainClock.tick(50)
+    mainClock.tick(60)
 
 
 time.sleep(1)
