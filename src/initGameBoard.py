@@ -1,7 +1,7 @@
 # collect the stars
 # get all the red stars
 
-import pygame, sys, random, time, tree, player, infoBox, fairy, laser, boulders
+import pygame, sys, random, time, tree, player, infoBox, fairy, laser, boulders, player2
 from pygame.locals import *
 from constants import * 
 
@@ -188,10 +188,17 @@ pygame.display.set_caption('Fairy Tales - Chapter 0')
 PLAYERWIDTH = 36
 PLAYERHEIGHT = 44 
 #link = pygame.Rect(WINDOWWIDTH/2, WINDOWHEIGHT - linkHEIGHT, linkWIDTH, linkHEIGHT)
-linkImage = pygame.image.load('tmp-Link.png')
-linkStretchedImage = pygame.transform.scale(linkImage, (PLAYERWIDTH, PLAYERHEIGHT))
 
-link = player.Player(screen, linkImage, PLAYERWIDTH, PLAYERHEIGHT, WINDOWWIDTH/2, WINDOWHEIGHT - PLAYERHEIGHT)
+#linkImage = pygame.image.load('tmp-Link.png')
+#linkStretchedImage = pygame.transform.scale(linkImage, (PLAYERWIDTH, PLAYERHEIGHT))
+linkImage = pygame.image.load('tmp-ML1.png')
+
+#link = player.Player(screen, linkImage, PLAYERWIDTH, PLAYERHEIGHT, WINDOWWIDTH/2, WINDOWHEIGHT - PLAYERHEIGHT)
+
+linkFW = 132/4
+linkFH = 144/4
+link = player2.Player2(screen, linkImage, PLAYERWIDTH, PLAYERHEIGHT, linkFW, linkFH, WINDOWWIDTH/2, WINDOWHEIGHT - PLAYERHEIGHT)
+
 
 # set up environment
 collidable = []
@@ -313,9 +320,11 @@ while not gameOver:
 
 
     # draw  link onto the surface
-    screen.blit(linkStretchedImage, link)
+ #   screen.blit(linkStretchedImage, link)
+#    screen.blit(linkImage, link)
+    link.draw(screen)
 
-
+    
     # draw the trees onto the surface
     drawTrees()
 

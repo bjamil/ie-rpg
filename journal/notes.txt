@@ -1,0 +1,49 @@
+Notes: 
+
+
+-----------------------------------------------------
+sunday, march 27, 2009:
+
+Today : making boulders 
+
+Questions : How should combat behavior be defined? Should the dood shoot/combat only in the 
+		forward direction OR should he be able to shoot/combat in other directions? 
+
+	    How should out of combat action moves work (e.g. when shooting boulders? ) 
+	
+	    More to the point: How should movement work? Does he actually face left/right when he moves?
+		or does he always face forward / backward? 
+
+New : 
+	- created a new removable class for objects that can be removed from the board if something hits them enough times
+	- created boulders (extends removable)
+	- incorporated removable objects into the game loop (note that removable objects must always be added BEFORE nonremovable ones
+		to the collidable objects list ) 
+	- 
+
+Changes : 
+	- added a constants.py file . it contains all the module/game-level constants 
+
+	- a new beam is shot only at key_up rather than key_down (i.e. if you hold down spacebar, only one beam fires
+		instead of multiple beams as before)
+
+	- 
+
+TODO : 
+	- add a facing-direction attribute for player (right now the direction he is facing is defaulted to fwd when firing
+		laser beams if no movement has been made for one game loop _ 
+
+
+
+-----------------------------------------------
+
+Today: making boulders 
+
+New: 
+	added lasers 
+
+changes: 
+infobox now does text-wrap-around
+
+	fixed : 
+	bug in infobox -setText excluded the last line in the input text 
